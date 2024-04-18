@@ -10,22 +10,30 @@ namespace UmbLocalizationMigrator.Core
 
     public class DiffService : IDiffService
     {
+        /// <summary>
+        /// Finds all files in the JSON directory 
+        /// 
+        /// Loops through them, and then generates a difference report, describing all of the properties
+        /// present in the v13, which are not in the new v14 file, and vice-versa
+        /// </summary>
+        /// <param name="reportPath">the path to the directory where report files will be written to</param>
+        /// <param name="jsonDirectoryPath">the path to the new v14 spec json localization files</param>
+        /// <param name="v14UsDatasetJsonPath">the path to the sample V14 en-US dataset</param>
+        /// <param name="v14DkDatasetJsonPath">The path to the sample V14 dk dataset</param>
         public void WriteDifferenceReportsForGeneratedJson(string reportPath, string jsonDirectoryPath, string v14UsDatasetJsonPath, string v14DkDatasetJsonPath)
         {
             IEnumerable<string> jsonFiles = Directory.GetFiles(jsonDirectoryPath, "*.json");
 
             foreach (var file in jsonFiles)
             {
-                WriteDifferenceReportsForOneFile($"{reportPath + Path.GetFileNameWithoutExtension(file)}-migration-report.md", file, v14DkDatasetJsonPath, v14UsDatasetJsonPath);
+                string outputPath = $"{reportPath + Path.GetFileNameWithoutExtension(file)}-migration-report.md";
+                Console.WriteLine($"Reporting on json file {file}. File will be generated at {outputPath}");
+
+                // just use the US dataset instead of the DK one, they seem to be the same
+                PrintJsonDiffs(file, v14UsDatasetJsonPath, outputPath);
             }
         }
 
-        private void WriteDifferenceReportsForOneFile(string outputPath, string file, string v14DkDatasetJsonPath, string v14UsDatasetJsonPath)
-        {
-            Console.WriteLine($"Reporting on json file {file}. File will be generated at {outputPath}");
-
-            PrintJsonDiffs(file, v14UsDatasetJsonPath, outputPath);
-        }
 
 
 
@@ -74,6 +82,11 @@ namespace UmbLocalizationMigrator.Core
         }
 
 
+        /// <summary>
+        /// Gets nested json properties in a HashSet, instead of ust the properties in the top-level of the json file
+        /// </summary>
+        /// <param name="json">the json object to return</param>
+        /// <returns></returns>
         private HashSet<string> GetJsonPropsNested(JToken json)
         {
             HashSet<string> propertyPaths = new HashSet<string>();

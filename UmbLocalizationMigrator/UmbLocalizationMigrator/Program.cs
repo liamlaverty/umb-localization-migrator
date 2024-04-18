@@ -16,11 +16,12 @@ namespace UmbLocalizationMigrator
 
             Console.WriteLine(configuration[AppConfigPaths.v14SampleFileDirectoryPath]);
 
+            // migrate each file from the V13 localization spec to the V14 spec
             new LocalizationMigrator(configuration).Main([]);
 
+            // write a report for the migrated files, detailing properties present in the 
+            // old files, but not the new ones
             new DifferenceFinder(configuration).Main([]);
-
-
         }
     }
 
