@@ -62,9 +62,28 @@ namespace UmbLocalizationMigrator.Core
 *
 * Language Alias: {language.alias} 
 * Language Int Name: {language.intName} 
+* Language Local Name: {language.localName} 
 * Language LCID: {language.lcid} 
 * Language Culture: {language.culture} 
 */");
+
+
+                bool includeManifestHeader = false;
+                if (includeManifestHeader){
+                    File.AppendAllText(filePath, @$"/** 
+Manifest File Entry: 
+{{
+    type: 'localization',
+    alias: 'Umb.Localization.{Char.ToUpper(language.culture[0]) + language.culture.Substring(1)}',
+    weight: -100,
+    name: '{language.localName}',
+    meta: {{
+        culture: '{language.culture.ToLower()}',
+    }},
+    js: () => import('../../../assets/lang/{language.culture.ToLower()}.js'),
+}},
+*/");
+                }
                 File.AppendAllText(filePath, "\r\nimport type { UmbLocalizationDictionary } from '@umbraco-cms/backoffice/localization-api';\r\n");
                 File.AppendAllText(filePath, "export default");
             }

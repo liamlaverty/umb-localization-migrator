@@ -447,6 +447,7 @@
 - speechBubbles.editContentScheduledSavedText
 - speechBubbles.editVariantSavedText
 - speechBubbles.editVariantSendToPublishText
+- speechBubbles.editMediaSavedText
 - speechBubbles.editCulturesAndHostnamesSaved
 - speechBubbles.editCulturesAndHostnamesError
 - speechBubbles.memberGroupSavedHeader

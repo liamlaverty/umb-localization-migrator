@@ -5,6 +5,7 @@
 *
 * Language Alias: da 
 * Language Int Name: Danish 
+* Language Local Name: dansk 
 * Language LCID: 6 
 * Language Culture: da-DK 
 */

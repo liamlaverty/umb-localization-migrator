@@ -5,6 +5,7 @@
 *
 * Language Alias: en_us 
 * Language Int Name: English (US) 
+* Language Local Name: English (US) 
 * Language LCID:  
 * Language Culture: en-US 
 */

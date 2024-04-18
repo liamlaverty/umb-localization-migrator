@@ -135,6 +135,7 @@
 - sections.deploySetupProject
 - sections.deployDeployment
 - sections.deployTroubleshooting
+- grid.warningText
 - contentTypeEditor.editProperty
 - contentTypeEditor.allowAtRootHeading
 - contentTypeEditor.allowAtRootDescription
