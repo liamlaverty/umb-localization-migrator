@@ -81,7 +81,10 @@ namespace UmbLocalizationMigrator.Core
                 {
                     File.AppendAllText(filePath, "\t\t");
 
-                    if (IsSpecialKey(key.alias))
+                    if (String.IsNullOrWhiteSpace(key.Value)) {
+                        // intentionally do nothing
+                    }
+                    else if (IsSpecialKey(key.alias))
                     {
                         File.AppendAllText(filePath, GetSpecialKeyText(key.alias, key.Value));
                     }

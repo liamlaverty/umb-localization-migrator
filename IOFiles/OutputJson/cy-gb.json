@@ -1463,8 +1463,7 @@
 		warning: "Rhybudd",
 		youAreDeleting: "Rydych chi'n dileu'r ffurfwedd rhes",
 		deletingARow: "Bydd dileu enw ffurfwedd rhes yn arwain at golli data ar gyfer unrhyw gynnwys cynfodol sy'n seiliedig ar ffurfwedd hwn.",
-		warningText: null,
-		deleteLayout: "Rydych chi'n dileu'r gosodiad",
+				deleteLayout: "Rydych chi'n dileu'r gosodiad",
 		deletingALayout: "Bydd addasu cynllun yn arwain at golli data ar gyfer unrhyw gynnwys presennol sy'n seiliedig ar y ffurfweddiad hwn.",
 	},
 	contentTypeEditor: {
