@@ -59,6 +59,7 @@ namespace UmbLocalizationMigrator
 
         private readonly string XmlDirectoryPath;
         private readonly string TsDirectoryPath;
+        private readonly string JsonDirectoryPath;
 
         public LocalizationMigrator(IConfiguration configuration)
         {
@@ -67,6 +68,7 @@ namespace UmbLocalizationMigrator
 
             XmlDirectoryPath = _config[AppConfigPaths.XmlDirectoryPath] ?? throw new ArgumentNullException(XmlDirectoryPath);
             TsDirectoryPath = _config[AppConfigPaths.TsDirectoryPath] ?? throw new ArgumentNullException(TsDirectoryPath); ;
+            JsonDirectoryPath = _config[AppConfigPaths.JsonDirectoryPath] ?? throw new ArgumentNullException(TsDirectoryPath); ;
         }
 
 
@@ -74,7 +76,7 @@ namespace UmbLocalizationMigrator
         {
             Console.WriteLine("Starting Migration Service!");
 
-            _migrator.MigrateDirectoryFromXmlToJson(XmlDirectoryPath, TsDirectoryPath);
+            _migrator.MigrateDirectoryFromXmlToJson(XmlDirectoryPath, TsDirectoryPath, JsonDirectoryPath);
 
             Console.WriteLine("Migration Service Done. Press any key to continue");
             Console.ReadLine();
@@ -88,6 +90,7 @@ namespace UmbLocalizationMigrator
     {
         public const string DirectoryPath = "DiffFinder:DirectoryPath";
         public const string XmlDirectoryPath = "LocalizationManager:XmlDirectoryPath";
+        public const string JsonDirectoryPath = "LocalizationManager:JsonDirectoryPath";
         public const string TsDirectoryPath = "LocalizationManager:TsDirectoryPath";
     }
 }

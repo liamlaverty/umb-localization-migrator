@@ -7,7 +7,7 @@ namespace UmbLocalizationMigrator.Core
 
     public interface IMigratorService
     {
-        void MigrateDirectoryFromXmlToJson(string xmlFilePath, string jsonFolderPath);
+        void MigrateDirectoryFromXmlToJson(string xmlFilePath, string tsFolderPath, string jsonFolderPath);
 
     }
 
@@ -20,20 +20,28 @@ namespace UmbLocalizationMigrator.Core
         /// </summary>
         /// <param name="xmlFolderPath">the dirctory path to the XML input</param>
         /// <param name="tsFolderPath">the directory path to the TypeScript output</param>
-        public void MigrateDirectoryFromXmlToJson(string xmlFolderPath, string tsFolderPath)
+        public void MigrateDirectoryFromXmlToJson(string xmlFolderPath, string tsFolderPath, string jsonFolderPath)
         {
             IEnumerable<string> xmlFiles = Directory.GetFiles(xmlFolderPath, "*.xml");
 
             foreach (var file in xmlFiles)
             {
-                MigrateFileFromXmlToJson(file, tsFolderPath);
+                MigrateFileFromXmlToJson(file, jsonFolderPath, writeToJsonObj: true);
+                MigrateFileFromXmlToJson(file, tsFolderPath, writeToJsonObj: false);
             }
 
         }
 
-        private void MigrateFileFromXmlToJson(string file, string outputPath)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="outputPath"></param>
+        /// <param name="writeToJsonObj"></param>
+        private void MigrateFileFromXmlToJson(string file, string outputPath, bool writeToJsonObj)
         {
-            Console.WriteLine($"Migrating file {file}");
+            Console.WriteLine($"Migrating to TS: file {file} ");
 
             XmlSerializer serializer = new XmlSerializer(typeof(language));
             language language = new language();    
@@ -43,17 +51,28 @@ namespace UmbLocalizationMigrator.Core
                 language = (language)serializer.Deserialize(stream);
             }
 
-            string filePath = outputPath + language.culture.ToLower() + ".ts";
+            string filePath = outputPath + language.culture.ToLower() + (writeToJsonObj ?  ".json" : ".ts");
             File.WriteAllText(filePath, "");// clears any existing file
 
-            File.AppendAllText(filePath, $"/** \r\n * \r\n * Origin File: https://github.com/umbraco/Umbraco-CMS/tree/v13/contrib/src/Umbraco.Core/EmbeddedResources/Lang/{Path.GetFileName(file)} \r\n\r\n * Creator Name: {language.creator.name} \r\n * Creator Link: {language.creator.link} \r\n */\r\n\r\n");
-
-            File.AppendAllText(filePath, "import type { UmbLocalizationDictionary } from '@umbraco-cms/backoffice/localization-api';\r\n");
-            File.AppendAllText(filePath, "export default {\r\n");
+            if (!writeToJsonObj){
+                File.AppendAllText(filePath, @$"/** 
+* Origin File: https://github.com/umbraco/Umbraco-CMS/tree/v13/contrib/src/Umbraco.Core/EmbeddedResources/Lang/{Path.GetFileName(file)} 
+* Creator Name: {language.creator.name} 
+* Creator Link: {language.creator.link} 
+*
+* Language Alias: {language.alias} 
+* Language Int Name: {language.intName} 
+* Language LCID: {language.lcid} 
+* Language Culture: {language.culture} 
+*/");
+                File.AppendAllText(filePath, "\r\nimport type { UmbLocalizationDictionary } from '@umbraco-cms/backoffice/localization-api';\r\n");
+                File.AppendAllText(filePath, "export default");
+            }
+            File.AppendAllText(filePath, "{\r\n");
 
             foreach (var area in language.area)
             {
-                        File.AppendAllText(filePath, "\t");
+                File.AppendAllText(filePath, "\t");
 
                 // Console.WriteLine($"Found area {area.alias}");
                 File.AppendAllText(filePath, area.alias + ": {\r\n");
@@ -84,8 +103,12 @@ namespace UmbLocalizationMigrator.Core
 
             }
 
-            File.AppendAllText(filePath, "\t\r\n} as UmbLocalizationDictionary;");
 
+            File.AppendAllText(filePath, "\t\r\n}");
+            if (!writeToJsonObj)
+            {
+                File.AppendAllText(filePath, " as UmbLocalizationDictionary;");
+            }
 
 
             Console.WriteLine($"Completed migrating file {file}");
