@@ -14,11 +14,13 @@ namespace UmbLocalizationMigrator
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             IConfiguration configuration = builder.Build();
 
-            Console.WriteLine(configuration[AppConfigPaths.DirectoryPath]);
+            Console.WriteLine(configuration[AppConfigPaths.v14SampleFileDirectoryPath]);
 
             new LocalizationMigrator(configuration).Main([]);
 
             new DifferenceFinder(configuration).Main([]);
+
+
         }
     }
 
@@ -27,20 +29,26 @@ namespace UmbLocalizationMigrator
     {
         private readonly IDiffService _differ;
         private readonly IConfiguration _config;
-        private readonly string DirectoryPath;
+        private readonly string v14SampleFileDirectoryPath;
+
+        private readonly string JsonDirectoryPath;
+        private readonly string GeneratedReportDirectoryPath;
+
 
         public DifferenceFinder(IConfiguration configuration)
         {
             _differ = new DiffService();
             _config = configuration;
-            DirectoryPath = _config[AppConfigPaths.DirectoryPath] ?? throw new ArgumentNullException(DirectoryPath);
+            v14SampleFileDirectoryPath = _config[AppConfigPaths.v14SampleFileDirectoryPath] ?? throw new ArgumentNullException(v14SampleFileDirectoryPath);
+            JsonDirectoryPath = _config[AppConfigPaths.JsonDirectoryPath] ?? throw new ArgumentNullException(JsonDirectoryPath); ;
+            GeneratedReportDirectoryPath = _config[AppConfigPaths.GeneratedReportDirectoryPath] ?? throw new ArgumentNullException(GeneratedReportDirectoryPath); ;
         }
 
         public void Main(string[] args)
         {
             Console.WriteLine("Starting Diff Service!");
 
-            _differ.PrintJsonDiffs(DirectoryPath + "v13-us-dataset.json", DirectoryPath + "v14-us-dataset.json", DirectoryPath + "report.txt");
+            _differ.WriteDifferenceReportsForGeneratedJson(GeneratedReportDirectoryPath, JsonDirectoryPath, v14SampleFileDirectoryPath + "v14-us-dataset.json", v14SampleFileDirectoryPath + "v14-dk-dataset.json");
 
             Console.WriteLine("Diff Service Done. Press any key to continue");
             Console.ReadLine();
@@ -68,7 +76,7 @@ namespace UmbLocalizationMigrator
 
             XmlDirectoryPath = _config[AppConfigPaths.XmlDirectoryPath] ?? throw new ArgumentNullException(XmlDirectoryPath);
             TsDirectoryPath = _config[AppConfigPaths.TsDirectoryPath] ?? throw new ArgumentNullException(TsDirectoryPath); ;
-            JsonDirectoryPath = _config[AppConfigPaths.JsonDirectoryPath] ?? throw new ArgumentNullException(TsDirectoryPath); ;
+            JsonDirectoryPath = _config[AppConfigPaths.JsonDirectoryPath] ?? throw new ArgumentNullException(JsonDirectoryPath); ;
         }
 
 
@@ -88,7 +96,9 @@ namespace UmbLocalizationMigrator
 
     internal static class AppConfigPaths
     {
-        public const string DirectoryPath = "DiffFinder:DirectoryPath";
+        public const string v14SampleFileDirectoryPath = "DiffFinder:DirectoryPath";
+        public const string GeneratedReportDirectoryPath = "DiffFinder:GeneratedReportDirectoryPath";
+
         public const string XmlDirectoryPath = "LocalizationManager:XmlDirectoryPath";
         public const string JsonDirectoryPath = "LocalizationManager:JsonDirectoryPath";
         public const string TsDirectoryPath = "LocalizationManager:TsDirectoryPath";

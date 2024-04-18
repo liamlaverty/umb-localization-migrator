@@ -5,10 +5,30 @@ namespace UmbLocalizationMigrator.Core
     public interface IDiffService
     {
         void PrintJsonDiffs(string sourcePath, string destPath, string reportPath);
+        void WriteDifferenceReportsForGeneratedJson(string reportPath, string jsonDirectoryPath, string v14UsDatasetJsonPath, string v14DkDatasetJsonPath);
     }
 
     public class DiffService : IDiffService
     {
+        public void WriteDifferenceReportsForGeneratedJson(string reportPath, string jsonDirectoryPath, string v14UsDatasetJsonPath, string v14DkDatasetJsonPath)
+        {
+            IEnumerable<string> jsonFiles = Directory.GetFiles(jsonDirectoryPath, "*.json");
+
+            foreach (var file in jsonFiles)
+            {
+                WriteDifferenceReportsForOneFile($"{reportPath + Path.GetFileNameWithoutExtension(file)}-migration-report.md", file, v14DkDatasetJsonPath, v14UsDatasetJsonPath);
+            }
+        }
+
+        private void WriteDifferenceReportsForOneFile(string outputPath, string file, string v14DkDatasetJsonPath, string v14UsDatasetJsonPath)
+        {
+            Console.WriteLine($"Reporting on json file {file}. File will be generated at {outputPath}");
+
+            PrintJsonDiffs(file, v14UsDatasetJsonPath, outputPath);
+        }
+
+
+
         /// <summary>
         /// Loads two json files, and prints out a list of properties
         /// present in the source file, but not in the destination file
@@ -34,27 +54,22 @@ namespace UmbLocalizationMigrator.Core
 
             File.WriteAllText(reportPath, "");// clears any existing file
 
-
+            File.AppendAllText(reportPath, $"# Localization migration report for {Path.GetFileNameWithoutExtension(v13JsonPath)}");
 
             // Print results
-            File.AppendAllText(reportPath, "Properties in V13 but not in V14\r\n\r\n");
+            File.AppendAllText(reportPath, "\r\n\r\n## Properties in V13 but not in V14\r\n\r\n");
 
-            Console.WriteLine("Properties in V13 but not in V14:");
             foreach (string property in propertiesIn13_ButNotIn14)
             {
-                Console.WriteLine(property);
-                File.AppendAllText(reportPath, $"{property}\r\n");
+                File.AppendAllText(reportPath, $"- {property}\r\n");
             }
 
-            File.AppendAllText(reportPath, "\r\n\r\n\r\n--------------------\r\n\r\n\r\n");
-            File.AppendAllText(reportPath, "Properties in V14 but not in V13 \r\n\r\n");
+            File.AppendAllText(reportPath, "\r\n\r\n\r\n---\r\n\r\n\r\n");
+            File.AppendAllText(reportPath, "## Properties in V14 but not in V13 \r\n\r\n");
 
-            Console.WriteLine("\nProperties in V14 but not in V13:");
             foreach (string property in propertiesIn14_ButNotIn13)
             {
-                Console.WriteLine(property);
-                File.AppendAllText(reportPath, $"{property}\r\n");
-
+                File.AppendAllText(reportPath, $"- {property}\r\n");
             }
         }
 
