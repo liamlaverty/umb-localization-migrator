@@ -713,7 +713,6 @@ export default{
 		first: "Erste(s)",
 		general: "Allgemein",
 		groups: "Gruppen",
-		groups: "Gruppe",
 		generic: "Generisch",
 		group: "Gruppe",
 		height: "Höhe",

@@ -77,7 +77,7 @@ namespace UmbLocalizationMigrator.Core
                 // Console.WriteLine($"Found area {area.alias}");
                 File.AppendAllText(filePath, area.alias + ": {\r\n");
 
-                foreach (var key in area.key)
+                foreach (var key in area.key.DistinctBy(c => c.alias))
                 {
                     File.AppendAllText(filePath, "\t\t");
 
