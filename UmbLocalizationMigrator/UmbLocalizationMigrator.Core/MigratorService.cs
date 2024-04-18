@@ -35,7 +35,6 @@ namespace UmbLocalizationMigrator.Core
         {
             Console.WriteLine($"Migrating file {file}");
 
-
             XmlSerializer serializer = new XmlSerializer(typeof(language));
             language language = new language();    
 
@@ -44,21 +43,25 @@ namespace UmbLocalizationMigrator.Core
                 language = (language)serializer.Deserialize(stream);
             }
 
-            string filePath = outputPath + language.culture + ".ts";
+            string filePath = outputPath + language.culture.ToLower() + ".ts";
             File.WriteAllText(filePath, "");// clears any existing file
 
-            File.AppendAllText(filePath, $"/** \r\n * \r\n * Origin File: https://github.com/umbraco/Umbraco-CMS/tree/v13/contrib/src/Umbraco.Core/EmbeddedResources/Lang/{file} \r\n\r\n * Creator Name: {language.creator.name} \r\n * Creator Link: {language.creator.link} \r\n */\r\n\r\n");
+            File.AppendAllText(filePath, $"/** \r\n * \r\n * Origin File: https://github.com/umbraco/Umbraco-CMS/tree/v13/contrib/src/Umbraco.Core/EmbeddedResources/Lang/{Path.GetFileName(file)} \r\n\r\n * Creator Name: {language.creator.name} \r\n * Creator Link: {language.creator.link} \r\n */\r\n\r\n");
 
             File.AppendAllText(filePath, "import type { UmbLocalizationDictionary } from '@umbraco-cms/backoffice/localization-api';\r\n");
             File.AppendAllText(filePath, "export default {\r\n");
 
             foreach (var area in language.area)
             {
+                        File.AppendAllText(filePath, "\t");
+
                 // Console.WriteLine($"Found area {area.alias}");
                 File.AppendAllText(filePath, area.alias + ": {\r\n");
 
                 foreach (var key in area.key)
                 {
+                    File.AppendAllText(filePath, "\t\t");
+
                     if (IsSpecialKey(key.alias))
                     {
                         File.AppendAllText(filePath, GetSpecialKeyText(key.alias, key.Value));
@@ -77,10 +80,11 @@ namespace UmbLocalizationMigrator.Core
                     }
                 }
 
-                File.AppendAllText(filePath, "\r\n},\r\n");
+                File.AppendAllText(filePath, "\t},\r\n");
 
             }
-            File.AppendAllText(filePath, "\r\n} as UmbLocalizationDictionary;");
+
+            File.AppendAllText(filePath, "\t\r\n} as UmbLocalizationDictionary;");
 
 
 
